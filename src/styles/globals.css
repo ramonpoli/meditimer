@@ -120,3 +120,17 @@
 		@apply bg-background text-foreground;
 	}
 }
+.alert-enter {
+	opacity: 0;
+}
+.alert-enter-active {
+	opacity: 1;
+	transition: opacity 1000ms;
+}
+.alert-exit {
+	opacity: 1;
+}
+.alert-exit-active {
+	opacity: 0;
+	transition: opacity 1000ms;
+}
