@@ -116,28 +116,28 @@ export default function Home() {
   };
 
   return (
-    <main className="flex flex-col gap-16 items-center justify-center min-h-screen bg-black font-[family-name:var(--font-geist-sans)]">
+    <main className="flex flex-col gap-8 items-center justify-center min-h-screen bg-black font-[family-name:var(--font-geist-sans)]">
       {/* TODO: animate the text using css content: https://stackoverflow.com/a/42236739/2091771 */}
       <div
-        className={`text-[15vw] md:text-9xl font-bold text-[var(--color-background)] transition-all duration-1000 select-none ${
+        className={`text-[25vw] md:text-9xl font-bold text-[var(--color-background)] transition-all duration-1000 select-none ${
           isRunning ? "animate-breathing" : "scale-100"
         }`}
       >
         {formatTime(time)}
       </div>
-      <div className="flex flex-col gap-2 mb-8 flex-wrap justify-center items-center">
-        <CSSTransition
-          in={!hasStarted}
-          nodeRef={buttonNodeRef}
-          timeout={1000}
-          classNames="alert"
-          unmountOnExit
-        >
-          <div
-            className="flex flex-col gap-16 items-center"
-            ref={buttonNodeRef}
+      <div className="flex flex-col gap-8 mb-8 flex-wrap justify-center items-center">
+        <div className="min-h-32 md:min-h-8">
+          <CSSTransition
+            in={!hasStarted}
+            nodeRef={buttonNodeRef}
+            timeout={1000}
+            classNames="alert"
+            unmountOnExit
           >
-            <div className="flex gap-2 flex-wrap justify-center">
+            <div
+              className="flex gap-2 flex-wrap justify-center"
+              ref={buttonNodeRef}
+            >
               {TIME_PRESETS.map((preset) => (
                 <Button
                   key={preset.value}
@@ -188,54 +188,42 @@ export default function Home() {
                 </PopoverContent>
               </Popover>
             </div>
-            <PlayButton onClick={handlePlayPause} />
-          </div>
-        </CSSTransition>
+          </CSSTransition>
+        </div>
 
-        <CSSTransition
-          in={hasStarted && isRunning}
-          nodeRef={pauseButtonNodeRef}
-          timeout={500}
-          delay={1000}
-          classNames="alert"
-          unmountOnExit
-        >
-          <div ref={pauseButtonNodeRef}>
-            <PauseButton onClick={handlePlayPause} />
+        <div className="flex gap-2 md:gap-16 items-center">
+          <div className="flex-1" />
+          <div className="flex-1">
+            {!isRunning ? (
+              <RoundButton onClick={handlePlayPause}>
+                <Play size={64} />
+              </RoundButton>
+            ) : (
+              <RoundButton onClick={handlePlayPause} className="flex-1">
+                <Pause size={64} />
+              </RoundButton>
+            )}
           </div>
-        </CSSTransition>
-
-        <CSSTransition
-          in={hasStarted && !isRunning}
-          nodeRef={pauseButtonNodeRef}
-          timeout={500}
-          classNames="alert"
-          unmountOnExit
-        >
-          <div className="flex gap-16 items-center" ref={pauseButtonNodeRef}>
-            <PlayButton onClick={handlePlayPause} />
-            <RoundButton onClick={handleReset}>
-              <Square className="w-8 h-8 ml-1" />
-            </RoundButton>
+          <div className="flex-1">
+            <CSSTransition
+              in={hasStarted && !isRunning}
+              nodeRef={pauseButtonNodeRef}
+              timeout={500}
+              classNames="alert"
+              unmountOnExit
+            >
+              <div
+                className="flex gap-16 items-center"
+                ref={pauseButtonNodeRef}
+              >
+                <RoundButton onClick={handleReset}>
+                  <Square size={"sm"} />
+                </RoundButton>
+              </div>
+            </CSSTransition>
           </div>
-        </CSSTransition>
+        </div>
       </div>
     </main>
   );
 }
-
-const PlayButton = ({ onClick }: { onClick: () => void }) => {
-  return (
-    <RoundButton onClick={onClick}>
-      <Play className="w-8 h-8 ml-1" />
-    </RoundButton>
-  );
-};
-
-const PauseButton = ({ onClick }: { onClick: () => void }) => {
-  return (
-    <RoundButton onClick={onClick}>
-      <Pause className="w-8 h-8 ml-1" />
-    </RoundButton>
-  );
-};
