@@ -1,3 +1,5 @@
+"use client";
+
 type useAudioReturn = {
 	start: () => void;
 	stop: () => void;
