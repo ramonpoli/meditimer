@@ -43,8 +43,8 @@ export default function Home() {
   const [hasStarted, setHasStarted] = useState(false);
   const [displayCustomTime, setDisplayCustomTime] = useState(false);
   const buttonNodeRef = useRef<HTMLDivElement>(null);
-  const pauseButtonNodeRef = useRef<HTMLDivElement>(null);
-  const resetButtonNodeRef = useRef<HTMLDivElement>(null);
+  const stopButtonNodeRef = useRef<HTMLDivElement>(null);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -116,17 +116,16 @@ export default function Home() {
   };
 
   return (
-    <main className="flex flex-col gap-8 items-center justify-center min-h-screen bg-black font-[family-name:var(--font-geist-sans)]">
-      {/* TODO: animate the text using css content: https://stackoverflow.com/a/42236739/2091771 */}
+    <main className="flex flex-col gap-8 items-center justify-center w-full flex-1">
       <div
-        className={`text-[25vw] md:text-9xl font-bold text-[var(--color-background)] transition-all duration-1000 select-none ${
+        className={`text-[25vw] md:text-9xl font-bold transition-all duration-6000 select-none ${
           isRunning ? "animate-breathing" : "scale-100"
         }`}
       >
         {formatTime(time)}
       </div>
-      <div className="flex flex-col gap-8 mb-8 flex-wrap justify-center items-center">
-        <div className="min-h-32 md:min-h-8">
+      <div className="flex flex-col gap-8 mb-8 flex-wrap justify-center items-center w-full">
+        <div className="min-h-32 md:min-h-12">
           <CSSTransition
             in={!hasStarted}
             nodeRef={buttonNodeRef}
@@ -144,6 +143,7 @@ export default function Home() {
                   size="sm"
                   onClick={() => handleTimeChange(preset.value)}
                   disabled={isRunning}
+                  className="w-12 h-12 px-8 cursor-pointer"
                 >
                   {preset.label}
                 </Button>
@@ -154,7 +154,11 @@ export default function Home() {
                 onOpenChange={setDisplayCustomTime}
               >
                 <PopoverTrigger asChild>
-                  <Button size="sm" disabled={isRunning}>
+                  <Button
+                    size="sm"
+                    disabled={isRunning}
+                    className="w-12 h-12 px-10 cursor-pointer"
+                  >
                     Custom
                   </Button>
                 </PopoverTrigger>
@@ -191,15 +195,15 @@ export default function Home() {
           </CSSTransition>
         </div>
 
-        <div className="flex gap-2 md:gap-16 items-center">
+        <div className="flex gap-2 items-center w-full max-w-screen-sm justify-center px-4">
           <div className="flex-1" />
-          <div className="flex-1">
+          <div className="flex-1 flex justify-center">
             {!isRunning ? (
               <RoundButton onClick={handlePlayPause}>
                 <Play size={64} />
               </RoundButton>
             ) : (
-              <RoundButton onClick={handlePlayPause} className="flex-1">
+              <RoundButton onClick={handlePlayPause}>
                 <Pause size={64} />
               </RoundButton>
             )}
@@ -207,15 +211,12 @@ export default function Home() {
           <div className="flex-1">
             <CSSTransition
               in={hasStarted && !isRunning}
-              nodeRef={pauseButtonNodeRef}
+              nodeRef={stopButtonNodeRef}
               timeout={500}
               classNames="alert"
               unmountOnExit
             >
-              <div
-                className="flex gap-16 items-center"
-                ref={pauseButtonNodeRef}
-              >
+              <div className="flex gap-16 items-center" ref={stopButtonNodeRef}>
                 <RoundButton onClick={handleReset}>
                   <Square size={"sm"} />
                 </RoundButton>
