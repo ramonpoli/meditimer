@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./indexStyle.css";
 import { Button } from "@/components/ui/button";
-import { CircleStop, Pause, Play, Square, StopCircle } from "lucide-react";
+import { Pause, Play, Square } from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/popover";
 import RoundButton from "@/components/RoundButton";
 import { CSSTransition } from "react-transition-group";
+import useAudio from "@/hooks/use-audio";
 
 const TIME_PRESETS = [
   { label: "5m", value: 300 },
@@ -44,6 +45,7 @@ export default function Home() {
   const [displayCustomTime, setDisplayCustomTime] = useState(false);
   const buttonNodeRef = useRef<HTMLDivElement>(null);
   const stopButtonNodeRef = useRef<HTMLDivElement>(null);
+  const spaceSound = useAudio("/space-30s.mp3");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -53,6 +55,7 @@ export default function Home() {
   });
 
   useEffect(() => {
+    // Timer is running
     if (isRunning && time > 0) {
       intervalRef.current = setInterval(() => {
         setTime((prevTime) => {
@@ -63,6 +66,7 @@ export default function Home() {
           return prevTime - 1;
         });
       }, 1000);
+      // Timer has finished
     } else {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -90,17 +94,26 @@ export default function Home() {
       .replace(/^0:/, "");
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    if (time === 0) {
+      spaceSound.start();
+    }
+  }, [time]);
+
   const handlePlayPause = () => {
     setIsRunning(!isRunning);
     if (!hasStarted) {
       setHasStarted(true);
     }
+    spaceSound.isPlaying && spaceSound.stop();
   };
 
   const handleReset = () => {
     setIsRunning(false);
     setTime(initialTime);
     setHasStarted(false);
+    spaceSound.isPlaying && spaceSound.stop();
   };
 
   const handleTimeChange = (newTime: number) => {
@@ -109,8 +122,8 @@ export default function Home() {
       setInitialTime(newTime);
     }
   };
+
   const handleCustomTimeChange = (data: z.infer<typeof formSchema>) => {
-    console.log("data", data);
     handleTimeChange(data.time * 60);
     setDisplayCustomTime(false);
   };
