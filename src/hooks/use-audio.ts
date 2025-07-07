@@ -9,6 +9,15 @@ type useAudioReturn = {
 };
 
 const useAudio = (audioFile?: string): useAudioReturn => {
+	if (typeof window === "undefined") {
+		return {
+			start: () => {},
+			stop: () => {},
+			isPlaying: false,
+			pause: () => {},
+			setCurrentTime: () => {},
+		};
+	}
 	const audio = new Audio(audioFile || "/space-30s.mp3");
 	const start = () => {
 		audio.play();
